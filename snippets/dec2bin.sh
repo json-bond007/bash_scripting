@@ -10,7 +10,7 @@ dec2binary() {
 	while ((n != 0)); do
 		result=$((n % 2))
 		n=$((n / 2))
-		printf '%s' "$result"
+		echo -n "$result"
 	done
 
 }
