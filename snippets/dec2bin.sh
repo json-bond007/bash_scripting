@@ -1,9 +1,9 @@
 #!/bin/env bash
 
 # Let user input digit and return the binary formated as a string
-#
+# example, IP address, then do some operaions on it
 
-mapfile -t -d '.' ip_address < <(echo "$1")
+mapfile -t -d '.' ip_address < <(echo -n "$1")
 
 dec2binary() {
 	local n="$1"
@@ -17,7 +17,7 @@ dec2binary() {
 main() {
 	for ((i = 0; i < 5; i++)); do
 		n="${ip_address[$i]}"
-		dec2binary "$n"
+		dec2binary "$n" | rev
 	done
 	echo
 }
