@@ -21,6 +21,7 @@ chckmd5sum() {
 	fi
 }
 
+# Main method of the snippet
 main() {
 	local cpfile="${destination}/${file}"
 	echo cp --target-directory="$destination" "$file"
