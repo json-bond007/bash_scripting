@@ -4,7 +4,7 @@ while true; do
 	case "$key" in
 	"") echo "Enter" ;;
 	" ") echo "Space" ;;
-	q) echo "Quit" ;;
+	q) echo "Quit" && exit 0 ;;
 	*) echo "Other: $key" ;;
 	esac
 done
