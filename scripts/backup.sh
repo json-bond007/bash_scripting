@@ -2,7 +2,7 @@
 
 # Script to run backup functions
 # On gnu-linux
-#
+# Optional depencies: gum for prettier output
 . backup.conf
 
 LC_ALL=C
@@ -50,5 +50,13 @@ chck_conf() {
 	validate_dir=$(stat -c '%f' "${source_dirs[*]}")
 	if [[ -e "${target_dir}" ]] && [[ "$validate_dir" =~ (*directory*)+ ]] && [[ "${databases[*]}" =~ (\s?[0-9]+ [[:alnum:]]+ [[:alnum:]]+ [[:alnum:]]+)+ ]] && [[ "${max_backups}" =~ ^[0-9]+$ ]]; then
 		return 0
+	fi
+}
+
+backup_list() {
+	if which gum >/dev/null; then
+		:
+	else
+		:
 	fi
 }
