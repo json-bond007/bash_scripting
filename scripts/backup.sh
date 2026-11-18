@@ -7,8 +7,11 @@
 
 LC_ALL=C
 
+shopt -s globstar
+shopt -s failglob
+
 chck_root() {
-	if ((UID = 0)); then
+	if ((UID == 0)); then
 		return 0
 	fi
 }
@@ -54,9 +57,14 @@ chck_conf() {
 }
 
 backup_list() {
-	if which gum >/dev/null; then
+	local backups_matches=("${target_dir[@]##*/}")
+	local databases_matches=("${databases[@]///}")
+	if [[ "$backups_matches" =~ "$databases_matches" ]]; then
 		:
 	else
 		:
 	fi
 }
+
+shopt -n failglob
+shopt -n globstar
