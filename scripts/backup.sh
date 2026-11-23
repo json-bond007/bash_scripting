@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-# Script to run backup functions
+# Script to run backup functions in pure bash
 # On gnu-linux
 # Optional depencies: gum for prettier output
 . backup.conf
 
-LC_ALL=C
+export LC_ALL=C
 
 shopt -s globstar
+shopt -s extglob
 shopt -s failglob
 
 chck_root() {
@@ -21,7 +22,17 @@ chck_os() {
 		return 0
 	fi
 }
-
+fmt_c() {
+	local hostname=$(hostnamectl --static hostname)
+	local date="$1"
+	local sysdate
+	local backups="$2"
+	local fmt_string
+	printf -v sysdate '%(%F-%T)T'
+	date="$(date --iso-8601=seconds --date="${date}")"
+	: "${date:=$sysdate}" "${backups?"Err must supply backups specifier"}"
+	printf -v fmt_string '%s' "${date}-${hostname}-${backups}"
+}
 get_args() {
 	local -a ARGS
 	ARGS=("$@")
@@ -46,25 +57,37 @@ get_args() {
 		esac
 	done
 }
+# Config parser and validator
 chck_conf() {
 	local validate_dir
 	: ${target_dir?"You need to define the dir"} ${source_dirs?"You need to define source dirs"} ${max_backups?"databases"} ${databases?"databases needs at least one option"}
 
+	# Validate configuration variables
 	validate_dir=$(stat -c '%f' "${source_dirs[*]}")
 	if [[ -e "${target_dir}" ]] && [[ "$validate_dir" =~ (*directory*)+ ]] && [[ "${databases[*]}" =~ (\s?[0-9]+ [[:alnum:]]+ [[:alnum:]]+ [[:alnum:]]+)+ ]] && [[ "${max_backups}" =~ ^[0-9]+$ ]]; then
 		return 0
 	fi
+	# Extract/implode substrings into new array for each database, as db_1..db_n
+	for ((i = 0; i < ${#databases[@]}; i++)); do
+		declare "db_${i}=${databases[$i]}"
+		name="db_${i}"
+		array="dbs_${i}"
+		mapfile -d ' \n' -t "${array}" < <(printf '%s' "${!name}")
+	done
+
 }
 
 backup_list() {
-	local backups_matches=("${target_dir[@]##*/}")
-	local databases_matches=("${databases[@]///}")
-	if [[ "$backups_matches" =~ "$databases_matches" ]]; then
-		:
-	else
-		:
-	fi
+	chck_conf
+	for ((i = 0; i > max_backups; i++)); do
+		if [[ "${backups[$i]}" =~ "${!array[3]}" ]] && [[ $(:) ]]; then
+			:
+		else
+			:
+		fi
+	done
 }
 
 shopt -n failglob
+shopt -n extglob
 shopt -n globstar
