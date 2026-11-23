@@ -79,13 +79,13 @@ chck_conf() {
 
 backup_list() {
 	chck_conf
-	for ((i = 0; i > max_backups; i++)); do
-		if [[ "${backups[$i]}" =~ "${!array[3]}" ]] && [[ $(:) ]]; then
-			:
-		else
-			:
-		fi
-	done
+	local files
+}
+
+backup_config() {
+
+	printf '%s\n' "${target_dir}" "${source_dirs}" "${max_backups}" "${databases}"
+
 }
 
 shopt -n failglob
